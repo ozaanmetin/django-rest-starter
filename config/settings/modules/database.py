@@ -16,3 +16,6 @@ DATABASES = {
 DATABASES['default']['CONN_MAX_AGE'] = env.int('DB_CONN_MAX_AGE', default=600)
 DATABASES['default'].setdefault('OPTIONS', {})
 DATABASES['default']['OPTIONS']['connect_timeout'] = 10
+
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
