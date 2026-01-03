@@ -15,8 +15,6 @@ corresponding module in the `modules` package.
 import environ
 from pathlib import Path
 
-from . import modules
-
 # Base directory of application
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -72,61 +70,40 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Middleware configuration
+# Import all settings from modules
 # ----------------------------------------------------------------
-MIDDLEWARE = modules.middleware.MIDDLEWARE
+# This automatically imports all uppercase variables from each module
+# Much cleaner than importing each setting individually
 
+# Middleware
+from .modules.middleware import *
 
-# Template configuration
-# ----------------------------------------------------------------
-TEMPLATES = modules.templates.TEMPLATES
+# Templates
+from .modules.templates import *
 
+# Database
+from .modules.database import *
 
-# Database configuration
-# ----------------------------------------------------------------
-DATABASES = modules.database.DATABASES
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Authentication & Security
+from .modules.auth import *
 
+# CORS
+from .modules.cors import *
 
-# Password validation
-# ----------------------------------------------------------------
-AUTH_PASSWORD_VALIDATORS = modules.auth.AUTH_PASSWORD_VALIDATORS
+# Static files
+from .modules.static import *
 
+# REST Framework
+from .modules.rest_framework import *
 
-# Static and media files
-# ----------------------------------------------------------------
-STATIC_URL = modules.static.STATIC_URL
-STATIC_ROOT = modules.static.STATIC_ROOT
-STATICFILES_DIRS = modules.static.STATICFILES_DIRS
-MEDIA_URL = modules.static.MEDIA_URL
-MEDIA_ROOT = modules.static.MEDIA_ROOT
+# Cache
+from .modules.cache import *
 
+# Logging
+from .modules.logging import *
 
-# Rest Framework configuration
-# ----------------------------------------------------------------
-REST_FRAMEWORK = modules.rest_framework.REST_FRAMEWORK
+# OpenAPI/Swagger
+from .modules.openapi import *
 
-
-# Cache configuration
-# ----------------------------------------------------------------
-CACHES = modules.cache.CACHES
-
-
-# Logging configuration
-# ----------------------------------------------------------------
-LOGGING = modules.logging.LOGGING
-
-
-# OpenAPI/Swagger configuration
-# ----------------------------------------------------------------
-SPECTACULAR_SETTINGS = modules.openapi.SPECTACULAR_SETTINGS
-
-
-# Celery configuration
-# ----------------------------------------------------------------
-CELERY_BROKER_URL = modules.celery.CELERY_BROKER_URL
-CELERY_RESULT_BACKEND = modules.celery.CELERY_RESULT_BACKEND
-CELERY_ACCEPT_CONTENT = modules.celery.CELERY_ACCEPT_CONTENT
-CELERY_TASK_SERIALIZER = modules.celery.CELERY_TASK_SERIALIZER
-CELERY_RESULT_SERIALIZER = modules.celery.CELERY_RESULT_SERIALIZER
-CELERY_TIMEZONE = modules.celery.CELERY_TIMEZONE
+# Celery
+from .modules.celery import *
