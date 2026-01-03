@@ -44,15 +44,23 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    # rest framework
     'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    # admin filtering
+    'admin_auto_filters',
+    'rangefilter',
+    # django filter backend
+    'django_filters',
     'corsheaders',
     'drf_spectacular',
+    # celery
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
-LOCAL_APPS = [
-
-]
-
+LOCAL_APPS = []
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 
@@ -64,10 +72,20 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Internationalization
 # ----------------------------------------------------------------
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = env('LANGUAGE_CODE', default='tr')
+LANGUAGES = [
+    ('en', 'English'),
+    ('tr', 'Turkish'),
+]
+LOCALE_PATHS = [BASE_DIR / 'locale']
+TIME_ZONE = env('TIME_ZONE', default='Europe/Istanbul')
 USE_I18N = True
+USE_L10N = True
 USE_TZ = True
+
+if USE_TZ:
+    # Set Celery timezone to match Django timezone if timezone support is enabled
+    CELERY_TIMEZONE = TIME_ZONE
 
 
 # Import all settings from modules

@@ -1,16 +1,12 @@
+import environ
 from pathlib import Path
+
+env = environ.Env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = []
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# Static files storage
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-]
+MEDIA_URL = env.str('MEDIA_URL', default='/media/')
+MEDIA_ROOT = env.str('MEDIA_ROOT', default=BASE_DIR / 'media')
