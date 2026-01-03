@@ -1,60 +1,150 @@
+import os
+from enum import Enum
+from pathlib import Path
+
 import environ
 
 env = environ.Env()
 
+
+class LogLevel(str, Enum):
+    """Log level constants for type-safe configuration."""
+    DEBUG = 'DEBUG'
+    INFO = 'INFO'
+    WARNING = 'WARNING'
+    ERROR = 'ERROR'
+    CRITICAL = 'CRITICAL'
+
+
+class LogFormatter(str, Enum):
+    """Available log formatters."""
+    JSON = 'json'
+    DETAILED = 'detailed'
+    SIMPLE = 'simple'
+
+
+LOG_DIR = Path(env.str('LOG_FILE_PATH', default='logs'))
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def rotating_file_handler(
+    logger_name: str,
+    level: LogLevel = LogLevel.INFO,
+    max_bytes: int = 5 * 1024 * 1024,
+    backup_count: int = 5,
+    formatter: LogFormatter = LogFormatter.DETAILED,
+) -> str:
+    """
+    Creates a RotatingFileHandler configuration.
+
+    Args:
+        logger_name: Name of the logger (used to create subdirectory path)
+        level: Minimum log level for this handler
+        max_bytes: Maximum size per log file before rotation (default: 5MB)
+        backup_count: Number of backup files to keep (default: 5)
+        formatter: Log formatter to use
+
+    Returns:
+        Handler name to be used in logger configuration
+    """
+    log_path = LOG_DIR / logger_name.replace('.', os.sep)
+    log_path.mkdir(parents=True, exist_ok=True)
+
+    handler_name = f'{logger_name}_{level.lower()}_rotating'
+    HANDLERS[handler_name] = {
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': str(log_path / f'{level.lower()}.log'),
+        'maxBytes': max_bytes,
+        'backupCount': backup_count,
+        'formatter': formatter.value,
+        'encoding': 'utf-8',
+        'level': level.value,
+    }
+    return handler_name
+
+
+def create_logger(
+    level: LogLevel = LogLevel.INFO,
+    console: bool = True,
+    handlers: list = None,
+) -> dict:
+    """
+    Creates a logger configuration dictionary.
+
+    Args:
+        level: Minimum log level for this logger
+        console: Whether to output to console (default: True)
+        handlers: List of callables that return handler names
+
+    Returns:
+        Logger configuration dictionary
+    """
+    handler_list = []
+
+    if console:
+        handler_list.append('console')
+
+    if handlers:
+        for handler_fn in handlers:
+            handler_name = handler_fn()
+            handler_list.append(handler_name)
+
+    return {
+        'level': level.value,
+        'handlers': handler_list,
+        'propagate': False,
+    }   
+
+
+FORMATTERS = {
+    'json': {
+        '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+        'format': '%(asctime)s %(levelname)s %(name)s %(module)s %(funcName)s %(lineno)d %(message)s',
+    },
+    'detailed': {
+        'format': '{asctime} {levelname} {name} [{module}:{funcName}:{lineno}] {message}',
+        'style': '{',
+        'datefmt': '%Y-%m-%d %H:%M:%S',
+    },
+    'simple': {
+        'format': '{asctime} {levelname} {name} {message}',
+        'style': '{',
+        'datefmt': '%Y-%m-%d %H:%M:%S',
+    },
+}
+
+HANDLERS = {
+    'console': {
+        'class': 'logging.StreamHandler',
+        'formatter': LogFormatter.SIMPLE.value,
+        'level': LogLevel.DEBUG.value,
+    },
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-    },
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse',
-        },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 10,  # 10 MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
-    },
+    'formatters': FORMATTERS,
+    'handlers': HANDLERS,
     'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'propagate': False,
-        },
-        'django.request': {
-            'handlers': ['console', 'file'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        'django.db.backends': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
+        # django loggers
+        'django': create_logger(handlers=[
+            lambda: rotating_file_handler('django', level=LogLevel.INFO, formatter=LogFormatter.SIMPLE),
+            lambda: rotating_file_handler('django', level=LogLevel.ERROR),
+        ]),
+        'django.request': create_logger(handlers=[
+            lambda: rotating_file_handler('django.request', level=LogLevel.WARNING),
+            lambda: rotating_file_handler('django.request', level=LogLevel.ERROR),
+        ]),
+        'django.db.backends': create_logger(level=LogLevel.WARNING),
+        # celery loggers
+        'celery': create_logger(handlers=[
+            lambda: rotating_file_handler('celery', level=LogLevel.INFO),
+            lambda: rotating_file_handler('celery', level=LogLevel.ERROR),
+        ]),
     },
     'root': {
-        'handlers': ['console', 'file'],
-        'level': 'INFO',
+        'level': LogLevel.INFO.value,
+        'handlers': ['console'],
     },
 }
