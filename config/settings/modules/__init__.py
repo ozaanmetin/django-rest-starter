@@ -6,8 +6,10 @@ from . import (
     database,
     logging,
     middleware,
+    monitoring,
     openapi,
     rest_framework,
+    security,
     static,
     templates,
 )
@@ -20,8 +22,10 @@ __all__ = [
     'database',
     'logging',
     'middleware',
+    'monitoring',
     'openapi',
     'rest_framework',
+    'security',
     'static',
     'templates',
 ]

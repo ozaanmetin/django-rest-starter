@@ -127,3 +127,9 @@ from .modules.openapi import *
 
 # Celery
 from .modules.celery import *
+
+# Security
+from .modules.security import *
+
+# Monitoring
+from .modules.monitoring import *
