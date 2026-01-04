@@ -133,7 +133,7 @@ LOGGING = {
             lambda: rotating_file_handler('django', level=LogLevel.ERROR),
         ]),
         'django.request': create_logger(handlers=[
-            lambda: rotating_file_handler('django.request', level=LogLevel.WARNING),
+            lambda: rotating_file_handler('django.request', level=LogLevel.INFO),
             lambda: rotating_file_handler('django.request', level=LogLevel.ERROR),
         ]),
         'django.db.backends': create_logger(level=LogLevel.WARNING),
