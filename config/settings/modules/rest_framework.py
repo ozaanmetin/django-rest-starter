@@ -1,3 +1,7 @@
+import environ
+
+env = environ.Env()
+
 REST_FRAMEWORK = {
     # Default renderer classes
     'DEFAULT_RENDERER_CLASSES': [
@@ -22,6 +26,12 @@ REST_FRAMEWORK = {
     # Exception handler
     'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
 
+    # API Versioning
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    'DEFAULT_VERSION': 'v1',
+    'ALLOWED_VERSIONS': ['v1'],
+    'VERSION_PARAM': 'version',
+
     # Pagination
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
@@ -43,6 +53,13 @@ REST_FRAMEWORK = {
         'user': '1000/hour',
     },
 
-    # Openapi schema 
+    # Security (For private files)
+    'UPLOADED_FILES_USE_URL': False,
+
+    # Openapi schema
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+
+# Set NUM_PROXIES if behind a load balancer
+if env.bool('USE_PROXY', default=False):
+    REST_FRAMEWORK['NUM_PROXIES'] = env.int('NUM_PROXIES', default=1)
