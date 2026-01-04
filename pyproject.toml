@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "drf-app-template"
 version = "0.1.0"
@@ -51,6 +55,9 @@ dev = [
     "django-debug-toolbar>=4.2.0",
     "bandit[toml]>=1.7.10",
 ]
+monitoring = [
+    "sentry-sdk>=2.19.0,<3.0",
+]
 
 [tool.uv]
 dev-dependencies = [
@@ -63,6 +70,7 @@ dev-dependencies = [
     "ipython>=8.18.0",
     "django-debug-toolbar>=4.2.0",
     "bandit[toml]>=1.7.10",
+    "sentry-sdk>=2.19.0,<3.0",
 ]
 
 # Pytest
@@ -130,3 +138,9 @@ omit = [
 skips = ["B101", "B110"]  # assert used
 targets = ["apps", "config"]
 exclude = ["migrations", "tests", "__pycache__"]
+
+# Setuptools - Package discovery
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["config*", "apps*"]
+exclude = ["logs*", "templates*", "staticfiles*", "media*", "*.tests*"]

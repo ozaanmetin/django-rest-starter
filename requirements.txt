@@ -50,6 +50,7 @@ django==5.2.9
     #   django-celery-beat
     #   django-celery-results
     #   django-cors-headers
+    #   django-extensions
     #   django-filter
     #   django-model-utils
     #   django-redis
@@ -70,6 +71,8 @@ django-cleanup==8.1.0
 django-cors-headers==4.9.0
     # via drf-app-template (pyproject.toml)
 django-environ==0.12.0
+    # via drf-app-template (pyproject.toml)
+django-extensions==4.1
     # via drf-app-template (pyproject.toml)
 django-filter==24.3
     # via drf-app-template (pyproject.toml)
@@ -126,6 +129,8 @@ python-crontab==3.3.0
     # via django-celery-beat
 python-dateutil==2.9.0.post0
     # via celery
+python-json-logger==2.0.7
+    # via drf-app-template (pyproject.toml)
 pyyaml==6.0.3
     # via drf-spectacular
 redis==5.3.1
