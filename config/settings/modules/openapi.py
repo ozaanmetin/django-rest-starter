@@ -1,3 +1,9 @@
+"""
+OpenAPI (drf-spectacular) settings for the Django application.
+
+@author Ozan Metin
+"""
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Django REST API',
     'DESCRIPTION': 'API documentation for Django REST project',

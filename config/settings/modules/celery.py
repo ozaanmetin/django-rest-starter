@@ -1,3 +1,9 @@
+"""
+Celery configuration settings for the Django application.
+
+@author Ozan Metin
+"""
+
 import os
 import environ
 

@@ -1,3 +1,10 @@
+"""
+Logging configuration settings for the Django application.
+
+@author Ozan Metin
+"""
+
+
 import os
 from enum import Enum
 from pathlib import Path

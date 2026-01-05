@@ -1,3 +1,9 @@
+"""
+Django REST Framework settings for the application.
+
+@author Ozan Metin
+"""
+
 import environ
 
 env = environ.Env()

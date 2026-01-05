@@ -1,3 +1,9 @@
+"""
+Cache settings for the Django application.
+
+@author Ozan Metin
+"""
+
 import environ
 
 env = environ.Env()
