@@ -14,6 +14,9 @@ import environ
 env = environ.Env()
 
 
+# Enums
+# ---------------------------------------------------
+
 class LogLevel(str, Enum):
     """Log level constants for type-safe configuration."""
     DEBUG = 'DEBUG'
@@ -30,9 +33,8 @@ class LogFormatter(str, Enum):
     SIMPLE = 'simple'
 
 
-LOG_DIR = Path(env.str('LOG_FILE_PATH', default='logs'))
-LOG_DIR.mkdir(parents=True, exist_ok=True)
-
+# Logging Handlers
+# ---------------------------------------------------
 
 def rotating_file_handler(
     logger_name: str,
@@ -54,6 +56,9 @@ def rotating_file_handler(
     Returns:
         Handler name to be used in logger configuration
     """
+    LOG_DIR = Path(env.str('LOG_FILE_PATH', default='logs'))
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    
     log_path = LOG_DIR / logger_name.replace('.', os.sep)
     log_path.mkdir(parents=True, exist_ok=True)
 
@@ -69,6 +74,9 @@ def rotating_file_handler(
     }
     return handler_name
 
+
+# Logger Creation Function
+# ---------------------------------------------------
 
 def create_logger(
     level: LogLevel = LogLevel.INFO,
@@ -103,6 +111,9 @@ def create_logger(
     }   
 
 
+# Logging Configuration
+# ---------------------------------------------------
+
 FORMATTERS = {
     'json': {
         '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
@@ -120,6 +131,7 @@ FORMATTERS = {
     },
 }
 
+# rotating file handlers will be added dynamically
 HANDLERS = {
     'console': {
         'class': 'logging.StreamHandler',

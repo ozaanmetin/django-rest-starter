@@ -195,3 +195,7 @@ yarn-error.log*
 *.css.map
 *.sass.map
 *.scss.map
+
+
+# AI generated files
+CLAUDE.md
