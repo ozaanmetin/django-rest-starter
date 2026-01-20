@@ -28,7 +28,7 @@ REST_FRAMEWORK = {
     ],
 
     # Exception handler
-    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
 
     # API Versioning
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
@@ -37,8 +37,8 @@ REST_FRAMEWORK = {
     'VERSION_PARAM': 'version',
 
     # Pagination
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
+    'DEFAULT_PAGINATION_CLASS': 'core.pagination.StandardPageNumberPagination',
+    'PAGE_SIZE': 10,
 
     # Filtering
     'DEFAULT_FILTER_BACKENDS': [
