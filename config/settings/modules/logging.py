@@ -153,7 +153,6 @@ LOGGING = {
             lambda: rotating_file_handler('django.request', level=LogLevel.INFO),
             lambda: rotating_file_handler('django.request', level=LogLevel.ERROR),
         ]),
-        'django.db.backends': create_logger(level=LogLevel.WARNING),
         # celery loggers
         'celery': create_logger(handlers=[
             lambda: rotating_file_handler('celery', level=LogLevel.INFO),
