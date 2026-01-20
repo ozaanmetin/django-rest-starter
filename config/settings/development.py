@@ -37,7 +37,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Enable sql query logging in development
 LOGGING['loggers']['django.db.backends'] = {
     'handlers': ['console'],
-    'level': 'DEBUG',
+    'level': 'WARNING',
     'propagate': False,
 }
 

@@ -7,6 +7,11 @@ from datetime import timedelta
 
 env = environ.Env()
 
+# Custom User Model
+AUTH_USER_MODEL = "accounts.User"
+LOGIN_URL = "admin:login"
+LOGOUT_REDIRECT_URL = "admin:login"
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
