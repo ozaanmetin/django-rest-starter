@@ -1,7 +1,5 @@
 """
 Static and media files configuration for the Django application.
-
-@author Ozan Metin
 """
 
 import environ

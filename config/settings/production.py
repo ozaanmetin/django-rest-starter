@@ -4,8 +4,6 @@ Production settings for the Django application.
 This file contains settings specific to the production environment.
 It imports from the base settings and overrides certain values to
 ensure security and performance in a live deployment.
-
-@author Ozan Metin
 """
 
 from .base import *

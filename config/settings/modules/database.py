@@ -1,7 +1,5 @@
 """
 Database configuration settings for the Django application.
-
-@author Ozan Metin
 """
 
 

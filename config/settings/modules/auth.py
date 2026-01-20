@@ -1,7 +1,5 @@
 """
 Authentication and Authorization settings for the Django application.
-
-@author Ozan Metin
 """
 
 import environ

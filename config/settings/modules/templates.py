@@ -1,7 +1,5 @@
 """
 Template settings for the Django application.
-
-@author Ozan Metin
 """
 
 from pathlib import Path

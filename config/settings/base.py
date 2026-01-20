@@ -8,8 +8,6 @@ should be defined in their respective files and import from this base file.
 This base settings uses modularized configurations for better organization
 and maintainability. If you need to adjust any settings, consider updating the
 corresponding module in the `modules` package.
-
-@author Ozan Metin
 """
 
 import environ

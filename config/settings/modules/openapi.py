@@ -1,7 +1,5 @@
 """
 OpenAPI (drf-spectacular) settings for the Django application.
-
-@author Ozan Metin
 """
 
 SPECTACULAR_SETTINGS = {

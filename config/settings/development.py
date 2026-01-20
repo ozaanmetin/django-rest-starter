@@ -4,8 +4,6 @@ Development settings for the Django application.
 This file contains settings specific to the development environment.
 It imports from the base settings and overrides certain values to
 facilitate local development and debugging.
-
-@author Ozan Metin
 """
 
 
