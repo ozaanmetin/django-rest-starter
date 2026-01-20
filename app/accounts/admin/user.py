@@ -25,39 +25,24 @@ class UserAdmin(BaseUserAdmin):
         "is_staff",
         "is_superuser",
         "is_active",
-        ("created_at", DateTimeRangeFilterBuilder()),
-        ("updated_at", DateTimeRangeFilterBuilder()),
-        ("date_joined", DateTimeRangeFilterBuilder()),
-        ("last_login", DateTimeRangeFilterBuilder()),
+        ("created_at", DateTimeRangeFilterBuilder(_("Creation Date"))),
+        ("updated_at", DateTimeRangeFilterBuilder(_("Update Date"))),
+        ("date_joined", DateTimeRangeFilterBuilder(_("Date Joined"))),
+        ("last_login", DateTimeRangeFilterBuilder(_("Last Login"))),
     )
     search_fields = ("email", "first_name", "last_name")
     ordering = ("-created_at",)
     filter_horizontal = []
 
     fieldsets = (
-        (("Login Credentials"), {"fields": ("email", "password")}),
+        (_("Login Credentials"), {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        (
-            _("Permissions"),
-            {
-                "fields": (
-                    "is_active",
-                    "is_staff",
-                    "is_superuser",
-                ),
-            },
-        ),
+        (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser")}),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
 
     add_fieldsets = (
-        (
-            None,
-            {
-                "classes": ("wide",),
-                "fields": ("email", "first_name", "last_name", "password1", "password2"),
-            },
-        ),
+        (None, {"classes": ("wide",), "fields": ("email", "first_name", "last_name", "password1", "password2")}),
     )
 
     readonly_fields = ("date_joined", "last_login", "created_at", "updated_at")
