@@ -200,3 +200,6 @@ yarn-error.log*
 
 # AI generated files
 CLAUDE.md
+
+# Linter
+.ruff_cache/
