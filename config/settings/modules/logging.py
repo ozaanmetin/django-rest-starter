@@ -54,7 +54,7 @@ def rotating_file_handler(
     Returns:
         Handler name to be used in logger configuration
     """
-    LOG_DIR = Path(env.str('LOG_FILE_PATH', default='logs'))
+    LOG_DIR = Path(env.str('LOG_FILE_PATH', default='.logs'))
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     
     log_path = LOG_DIR / logger_name.replace('.', os.sep)
