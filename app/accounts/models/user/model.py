@@ -69,3 +69,7 @@ class User(
     def get_full_name(self) -> str:
         """Return the first_name plus the last_name, with a space in between."""
         return f"{self.first_name} {self.last_name}".strip()
+    
+    @property
+    def can_sign_in(self) -> bool:
+        return self.is_active
