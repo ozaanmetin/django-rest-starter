@@ -9,22 +9,22 @@ from rest_framework_simplejwt.views import (
 )
 
 from .openapi import (
-    sign_in_schema,
     refresh_token_schema,
-    verify_token_schema,
+    sign_in_schema,
     sign_out_schema,
+    verify_token_schema,
 )
 from .serializers import (
-    SignInSerializer,
     RefreshTokenSerializer,
+    SignInSerializer,
     SignOutSerializer,
     VerifyTokenSerializer,
 )
 from .throttles import (
-    SignInThrottle,
     RefreshTokenThrottle,
-    VerifyTokenThrottle,
+    SignInThrottle,
     SignOutThrottle,
+    VerifyTokenThrottle,
 )
 
 

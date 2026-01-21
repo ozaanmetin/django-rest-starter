@@ -2,7 +2,6 @@
 Database configuration settings for the Django application.
 """
 
-
 import environ
 
 env = environ.Env()
@@ -35,4 +34,4 @@ DATABASES = {
 if env.bool("DB_SSL_REQUIRED", default=False):
     DATABASES["default"]["OPTIONS"]["sslmode"] = "require"
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

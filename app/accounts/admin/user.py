@@ -19,7 +19,7 @@ class UserAdmin(BaseUserAdmin):
         "is_superuser",
         "is_active",
         "created_at",
-        "updated_at"
+        "updated_at",
     )
     list_filter = (
         "is_staff",

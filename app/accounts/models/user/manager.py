@@ -1,7 +1,8 @@
 """Custom Manager for User model."""
 
 from django.contrib.auth.models import BaseUserManager
-from pkg.django.managers import TimestampedManager, IsActiveManager
+
+from pkg.django.managers import IsActiveManager, TimestampedManager
 
 from .queryset import UserQuerySet
 
@@ -26,7 +27,9 @@ class UserManager(BaseUserManager, TimestampedManager, IsActiveManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email: str, first_name: str, last_name: str, password: str | None = None, **extra_fields):
+    def create_superuser(
+        self, email: str, first_name: str, last_name: str, password: str | None = None, **extra_fields
+    ):
         """Create and return a superuser with the given email and password."""
         extra_fields["is_staff"] = True
         extra_fields["is_superuser"] = True
@@ -43,4 +46,3 @@ class UserManager(BaseUserManager, TimestampedManager, IsActiveManager):
     def superusers(self):
         """Filter to superusers only."""
         return self.get_queryset().superusers()
-

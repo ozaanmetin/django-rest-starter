@@ -1,7 +1,7 @@
 from typing import Optional
 
-from rest_framework.exceptions import APIException
 from rest_framework import status
+from rest_framework.exceptions import APIException
 
 
 class BaseAPIException(APIException):
@@ -31,10 +31,10 @@ class BaseAPIException(APIException):
 
     def __init__(
         self,
-        code: Optional[str] = None,
-        detail: Optional[str] = None,
-        errors: Optional[list[dict]] = None,
-        status_code: Optional[int] = None,
+        code: str | None = None,
+        detail: str | None = None,
+        errors: list[dict] | None = None,
+        status_code: int | None = None,
     ):
         self.code = code or self.default_code
         self.detail = detail or self.default_detail

@@ -114,6 +114,7 @@ ignore = [
     "F403",   # 'from module import *' used; unable to detect undefined names
     "B904",   # raise ... from err
     "E722",   # do not use bare 'except'
+    "E402",   # module level import not at top of file
     # TODO: Re-enable these later
     "F405",   # name may be undefined, or defined from star imports
     "F401",   # imported but unused

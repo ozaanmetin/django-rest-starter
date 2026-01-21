@@ -4,7 +4,7 @@ API v1 URL Configuration.
 All v1 API routes are registered here.
 """
 
-from django.urls import path, include
+from django.urls import include, path
 
 app_name = "api-v1"
 

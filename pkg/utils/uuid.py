@@ -6,8 +6,9 @@ from collections.abc import Callable
 time_ns = time.time_ns
 
 
-# same functionality as in uuid7 third-party module. (from uuid_extensions import uuid7) 
+# same functionality as in uuid7 third-party module. (from uuid_extensions import uuid7)
 # the package breaks the django migrations it requires manuel fixes, this way we avoid that and no dependency exists.
+
 
 def uuid7(
     ns: int | None = None,

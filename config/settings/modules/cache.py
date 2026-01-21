@@ -18,7 +18,7 @@ CACHES = {
             "SOCKET_CONNECT_TIMEOUT": env.int("REDIS_SOCKET_CONNECT_TIMEOUT", default=2),
             "SOCKET_TIMEOUT": env.int("REDIS_SOCKET_TIMEOUT", default=2),
         },
-        "KEY_PREFIX": env.str('CACHE_KEY_PREFIX', default='django_rest'),
+        "KEY_PREFIX": env.str("CACHE_KEY_PREFIX", default="django_rest"),
         "TIMEOUT": env.int("CACHE_DEFAULT_TIMEOUT", default=300),
     },
 }

@@ -5,15 +5,14 @@ JWT serializers for authentication.
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
-
 from rest_framework import serializers
 from rest_framework_simplejwt.exceptions import TokenError
-from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer,
     TokenRefreshSerializer,
     TokenVerifySerializer,
 )
+from rest_framework_simplejwt.settings import api_settings
 
 from core.exceptions import UnauthorizedError, ValidationError
 
@@ -102,7 +101,7 @@ class VerifyTokenSerializer(TokenVerifySerializer):
         Override to add custom validation logic.
         """
         return super().validate(attrs)
-    
+
 
 class SignOutSerializer(serializers.Serializer):
     """
@@ -114,18 +113,18 @@ class SignOutSerializer(serializers.Serializer):
     def validate(self, attrs):
         self.token = attrs["refresh"]
         return attrs
-    
+
     def save(self, **kwargs):
         try:
             refresh_token = api_settings.TOKEN_CLASS(self.token)
             refresh_token.blacklist()
         except TokenError as e:
             raise ValidationError(
-                detail=_('Token is invalid or expired'),
+                detail=_("Token is invalid or expired"),
                 code="invalid_token",
             ) from e
         except Exception as e:
             raise ValidationError(
-                detail=_('An error occurred during sign out'),
+                detail=_("An error occurred during sign out"),
                 code="sign_out_error",
             ) from e

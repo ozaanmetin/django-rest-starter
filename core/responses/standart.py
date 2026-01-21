@@ -1,8 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from rest_framework import status
-from rest_framework import serializers
+from rest_framework import serializers, status
 from rest_framework.response import Response
 
 
@@ -49,6 +48,7 @@ class ApiResponse:
     ) -> type[serializers.Serializer]:
         """Get a serializer class for this response type."""
         from .serializers import api_response_serializer
+
         return api_response_serializer(data_serializer, detail=detail, name=name)
 
 
@@ -85,6 +85,7 @@ class ErrorResponse:
     ) -> type[serializers.Serializer]:
         """Get a serializer class for this response type."""
         from .serializers import error_response_serializer
+
         return error_response_serializer(code=code, detail=detail, name=name)
 
 

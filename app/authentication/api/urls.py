@@ -1,12 +1,12 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 # jwt views
 from .jwt.views import (
-    SignInView,
     RefreshTokenView,
-    VerifyTokenView,
+    SignInView,
     SignOutView,
+    VerifyTokenView,
 )
 
 app_name = "authentication"
