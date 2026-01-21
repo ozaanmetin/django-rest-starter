@@ -28,10 +28,10 @@ def custom_exception_handler(exc, context):
             if isinstance(errors, list):
                 for error in errors:
                     error_code = getattr(error, "code", "invalid") if hasattr(error, "code") else "invalid"
-                    sub_errors.append(sub_error(field_name, error_code, str(error)))
+                    sub_errors.append(sub_error(field=field_name, code=error_code, detail=str(error)))
             else:
                 error_code = getattr(errors, "code", "invalid") if hasattr(errors, "code") else "invalid"
-                sub_errors.append(sub_error(field_name, error_code, str(errors)))
+                sub_errors.append(sub_error(field=field_name, code=error_code, detail=str(errors)))
 
         error_response = ErrorResponse(
             code="validation_error",
