@@ -133,4 +133,4 @@ from .modules.celery import *
 from .modules.security import *
 
 # Monitoring
-from .modules.monitoring import *
+from .modules.sentry import *

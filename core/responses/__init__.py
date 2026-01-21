@@ -6,11 +6,9 @@ from .standart import (
 )
 from .serializers import (
     ApiResponseSerializer,
-    CursorPaginatedApiResponseSerializer,
-    CursorPaginationSerializer,
-    ErrorResponseSerializer,
-    PaginatedApiResponseSerializer,
-    PaginationSerializer,
+    CursorPaginatedResponseSerializer,
+    PaginatedResponseSerializer,
+    ErrorResponseSerializer,    
     SubErrorSerializer,
     api_response_serializer,
     cursor_paginated_response_serializer,
@@ -21,15 +19,13 @@ from .serializers import (
 __all__ = [
     # Response classes
     "ApiResponse",
-    "CursorPaginatedApiResponse",
     "ErrorResponse",
-    "PaginatedApiResponse",
     "SubError",
     "sub_error",
     # Serializers
     "ApiResponseSerializer",
-    "CursorPaginatedApiResponseSerializer",
-    "CursorPaginationSerializer",
+    "CursorPaginatedResponseSerializer",
+    "PaginatedResponseSerializer",
     "ErrorResponseSerializer",
     "PaginatedApiResponseSerializer",
     "PaginationSerializer",

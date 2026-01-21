@@ -30,12 +30,6 @@ REST_FRAMEWORK = {
     # Exception handler
     'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
 
-    # API Versioning
-    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
-    'DEFAULT_VERSION': 'v1',
-    'ALLOWED_VERSIONS': ['v1'],
-    'VERSION_PARAM': 'version',
-
     # Pagination
     'DEFAULT_PAGINATION_CLASS': 'core.pagination.StandardPageNumberPagination',
     'PAGE_SIZE': 10,
