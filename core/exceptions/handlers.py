@@ -1,6 +1,6 @@
 from rest_framework.views import exception_handler
 
-from responses import ErrorResponse, sub_error
+from core.responses import ErrorResponse, sub_error
 
 from .api import BaseAPIException
 
