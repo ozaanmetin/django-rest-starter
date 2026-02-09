@@ -13,7 +13,6 @@ help:
 	@echo ""
 	@echo "$(YELLOW)Setup:$(NC)"
 	@echo "  make install          - Install production dependencies"
-	@echo "  make install-dev      - Install all dependencies (including dev)"
 	@echo "  make sync             - Sync dependencies with lockfile"
 	@echo "  make lock             - Generate/update uv.lock"
 	@echo "  make update           - Update all dependencies"
@@ -55,10 +54,6 @@ help:
 
 # Setup
 install:
-	uv sync --no-dev
-	uv run pre-commit install
-
-install-dev:
 	uv sync
 	uv run pre-commit install
 
@@ -75,7 +70,7 @@ update:
 # Development
 
 run:
-	uv run python manage.py runserver 0.0.0.0:8000
+	uv run python manage.py runserver
 
 shell:
 	uv run python manage.py shell -i ipython
@@ -134,7 +129,7 @@ celery-beat:
 	uv run celery -A config beat -l INFO
 
 # Docker
-COMPOSE_CMD = docker compose -f .deployment/docker-compose.yaml --env-file .env
+COMPOSE_CMD = docker compose -f docker-compose.yaml --env-file .env
 
 docker-up:
 	$(COMPOSE_CMD) up -d
@@ -159,7 +154,6 @@ outdated:
 	uv pip list --outdated
 
 
-# Export to requirements.txt (for compatibility)
+# Export to requirements.txt
 requirements:
-	uv pip compile pyproject.toml -o requirements.txt
-	uv pip compile pyproject.toml --extra dev -o requirements-dev.txt
+	uv pip compile pyproject.toml --extra sentry --extra otel -o requirements.txt

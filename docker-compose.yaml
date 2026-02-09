@@ -1,0 +1,248 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: .deployment/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - ./logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+    container_name: django_web
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    env_file:
+      - .env
+    ports:
+      - "${SERVER_PORT}:80"
+    volumes:
+      - ./.deployment/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
+    depends_on:
+      - web
+    container_name: django_nginx
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_HOST: ${DB_HOST}
+      POSTGRES_PORT: ${DB_PORT}
+      POSTGRES_CONN_MAX_AGE: ${DB_CONN_MAX_AGE}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    container_name: django_db
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    container_name: django_redis
+    restart: unless-stopped
+
+  celery:
+    build:
+      context: .
+      dockerfile: .deployment/Dockerfile
+    command: celery -A config worker -l info
+    env_file:
+      - .env
+    depends_on:
+      web:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+    container_name: django_celery
+    restart: unless-stopped
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: .deployment/Dockerfile
+    command: celery -A config beat -l info
+    env_file:
+      - .env
+    depends_on:
+      web:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+    container_name: django_celery_beat
+    restart: unless-stopped
+
+  # OpenTelemetry Collector (OTLP Gateway)
+  # All telemetry from the app flows through this collector.
+  # No application code changes required!
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.96.0
+    container_name: otel-collector
+    command: ["--config=/etc/otel-collector.yaml"]
+    volumes:
+      - ./.deployment/otel-collector/otel-collector.yaml:/etc/otel-collector.yaml:ro
+    ports:
+      - "4317:4317"    # OTLP gRPC receiver
+      - "4318:4318"    # OTLP HTTP receiver
+      - "8889:8889"    # Prometheus metrics exporter
+      - "13133:13133"  # Health check
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+    restart: unless-stopped
+
+  # Jaeger: Distributed tracing backend
+  # UI: http://localhost:16686
+  # Receives traces from OTel Collector
+  jaeger:
+    image: jaegertracing/all-in-one:1.54
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+    ports:
+      - "16686:16686"  # Jaeger UI
+    container_name: jaeger
+    restart: unless-stopped
+
+  # Logging Stack: Elasticsearch +  Kibana
+  # Kibana UI: http://localhost:5601
+  # Elasticsearch: http://localhost:9200
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'"
+      ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    container_name: elasticsearch
+    restart: unless-stopped
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    container_name: kibana
+    restart: unless-stopped
+
+  # Metrics: Prometheus
+  # UI: http://localhost:9090
+  # Scrapes metrics from OTel Collector, Redis, PostgreSQL exporters
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    volumes:
+      - ./.deployment/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - otel-collector
+    restart: unless-stopped
+
+  # Visualization: Grafana
+  # UI: http://localhost:3000 (admin/admin)
+  grafana:
+    image: grafana/grafana:10.4.1
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./.deployment/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./.deployment/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # Redis Exporter: Exposes Redis metrics for Prometheus
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.58.0
+    container_name: redis-exporter
+    environment:
+      - REDIS_ADDR=redis://redis:6379
+    ports:
+      - "9121:9121"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # PostgreSQL Exporter: Exposes PostgreSQL metrics for Prometheus
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: postgres-exporter
+    environment:
+      - DATA_SOURCE_NAME=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?sslmode=disable
+    ports:
+      - "9187:9187"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+  media_volume:
+  elasticsearch_data:
+  prometheus_data:
+  grafana_data:

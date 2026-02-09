@@ -1,1 +1,1 @@
-# django-rest-starter
+django-rest-starter

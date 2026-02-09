@@ -6,13 +6,13 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
-from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer,
     TokenRefreshSerializer,
     TokenVerifySerializer,
 )
 from rest_framework_simplejwt.settings import api_settings
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from core.exceptions import UnauthorizedError, ValidationError
 
@@ -47,8 +47,10 @@ class RefreshTokenSerializer(TokenRefreshSerializer):
 
     def validate(self, attrs):
         """
-        This method is overridden to provide custom validation logic.
+        Same implementation of TokenRefreshSerializer but
+        with added user existence and can_authenticate checks.
         """
+
         refresh = self.token_class(attrs["refresh"])
 
         user_id = refresh.payload.get(api_settings.USER_ID_CLAIM, None)
@@ -58,7 +60,7 @@ class RefreshTokenSerializer(TokenRefreshSerializer):
                 user = get_user_model().objects.get(**{api_settings.USER_ID_FIELD: user_id})
 
                 # Check if user can sign in and passes authentication rules
-                if not user.can_sign_in or not api_settings.USER_AUTHENTICATION_RULE(user):
+                if not user.can_authenticate or not api_settings.USER_AUTHENTICATION_RULE(user):
                     raise UnauthorizedError(
                         self.error_messages["no_active_account"],
                         "no_active_account",
@@ -116,7 +118,7 @@ class SignOutSerializer(serializers.Serializer):
 
     def save(self, **kwargs):
         try:
-            refresh_token = api_settings.TOKEN_CLASS(self.token)
+            refresh_token = RefreshToken(self.token)
             refresh_token.blacklist()
         except TokenError as e:
             raise ValidationError(
@@ -125,6 +127,6 @@ class SignOutSerializer(serializers.Serializer):
             ) from e
         except Exception as e:
             raise ValidationError(
-                detail=_("An error occurred during sign out"),
+                detail=_("An error occurred while blacklisting the token"),
                 code="sign_out_error",
             ) from e

@@ -23,7 +23,6 @@ UnauthorizedErrorResponse = error_response_serializer(
 
 user_me_schema = extend_schema(
     operation_id="user_me",
-    summary="Get Current User",
     description="Returns the authenticated user's profile information.",
     tags=USERS_TAG,
     responses={

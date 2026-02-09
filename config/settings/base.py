@@ -64,6 +64,8 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "core",
     "app.accounts",
+    "app.authentication",
+    "app.authorization",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -119,6 +121,9 @@ from .modules.middleware import *
 
 # OpenAPI/Swagger
 from .modules.openapi import *
+
+# OpenTelemetry
+from .modules.otel import *
 
 # REST Framework
 from .modules.rest_framework import *

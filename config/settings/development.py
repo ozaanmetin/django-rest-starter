@@ -8,8 +8,6 @@ facilitate local development and debugging.
 
 from .base import *
 
-print("Loading Development Settings")
-
 DEBUG = True
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]"]
 

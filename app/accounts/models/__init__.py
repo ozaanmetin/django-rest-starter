@@ -1,4 +1,4 @@
-from .user import User
+from .user.model import User
 
 __all__ = [
     "User",

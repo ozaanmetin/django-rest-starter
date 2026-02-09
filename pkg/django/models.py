@@ -7,7 +7,54 @@ from ..utils.uuid import uuid7
 from . import managers
 
 
-class TimestampedModel(models.Model):
+class BaseModel(models.Model):
+    """
+    Abstract model with lifecycle hooks for save and delete operations.
+
+    Override these methods in subclasses to add custom behavior:
+        - pre_save(): Called before save
+        - post_save(): Called after save
+        - pre_delete(): Called before delete
+        - post_delete(): Called after delete
+    """
+
+    # If True in migrations, default permissions (add, change, delete, view) will be created.
+    # Disable in model if not desired.
+    CREATE_DEFAULT_PERMISSIONS = True
+
+    class Meta:
+        abstract = True
+        default_permissions = ()  # Disable Django's auto permission creation
+
+    def pre_save(self, *args, **kwargs):
+        """Hook called before save. Override in subclass."""
+        pass
+
+    def post_save(self, *args, **kwargs):
+        """Hook called after save. Override in subclass."""
+        pass
+
+    def pre_delete(self, *args, **kwargs):
+        """Hook called before delete. Override in subclass."""
+        pass
+
+    def post_delete(self, *args, **kwargs):
+        """Hook called after delete. Override in subclass."""
+        pass
+
+    def save(self, *args, **kwargs):
+        self.pre_save(*args, **kwargs)
+        super().save(*args, **kwargs)
+        self.post_save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.pre_delete(*args, **kwargs)
+        result = super().delete(*args, **kwargs)
+        self.post_delete(*args, **kwargs)
+        return result
+
+
+class TimestampedModel(BaseModel):
     """
     Abstract model that auto-manages created_at and updated_at timestamps.
 
@@ -30,7 +77,7 @@ class TimestampedModel(models.Model):
         abstract = True
 
 
-class IsActiveModel(models.Model):
+class IsActiveModel(BaseModel):
     """
     Abstract model with an is_active boolean field.
 
@@ -44,7 +91,7 @@ class IsActiveModel(models.Model):
         abstract = True
 
 
-class UUIDPrimaryKeyModel(models.Model):
+class UUIDPrimaryKeyModel(BaseModel):
     """
     Abstract model that uses UUID7 as the primary key instead of auto-increment.
 
@@ -54,14 +101,14 @@ class UUIDPrimaryKeyModel(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
 
-    def get_id_repr(self):
+    def get_id(self):
         return str(self.id)
 
     class Meta:
         abstract = True
 
 
-class UUIDModel(models.Model):
+class UUIDModel(BaseModel):
     """
     Abstract model that adds a unique UUID7 field alongside the default PK.
 
@@ -74,7 +121,7 @@ class UUIDModel(models.Model):
         abstract = True
 
 
-class SoftDeleteModel(models.Model):
+class SoftDeleteModel(BaseModel):
     """
     Abstract model that marks records as deleted instead of removing them.
 

@@ -1,11 +1,7 @@
-[build-system]
-requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "drf-app-template"
+name = "drf-starter"
 version = "0.1.0"
-description = "A Django REST Framework application template with best practices."
+description = "DRF REST Starter - A Django-based backend starter project."
 readme = "README.md"
 requires-python = "==3.12.*"
 dependencies = [
@@ -55,22 +51,25 @@ dev = [
     "django-debug-toolbar>=4.2.0",
     "bandit[toml]>=1.7.10",
 ]
-monitoring = [
+sentry = [
     "sentry-sdk>=2.19.0,<3.0",
 ]
-
-[tool.uv]
-dev-dependencies = [
-    "pytest>=8.0.0",
-    "pytest-django>=4.11.1",
-    "pytest-cov>=6.1.1",
-    "pytest-xdist>=3.6.1",
-    "ruff>=0.8.0",
-    "pre-commit>=4.0.0",
-    "ipython>=8.18.0",
-    "django-debug-toolbar>=4.2.0",
-    "bandit[toml]>=1.7.10",
-    "sentry-sdk>=2.19.0,<3.0",
+otel = [
+    # OpenTelemetry Core
+    "opentelemetry-api>=1.25.0",
+    "opentelemetry-sdk>=1.25.0",
+    # OTLP Exporters (traces, metrics, logs - all via single protocol)
+    "opentelemetry-exporter-otlp>=1.25.0",
+    # Auto-instrumentation
+    "opentelemetry-instrumentation-django>=0.46b0",
+    "opentelemetry-instrumentation-celery>=0.46b0",
+    "opentelemetry-instrumentation-redis>=0.46b0",
+    "opentelemetry-instrumentation-psycopg2>=0.46b0",
+    # System metrics
+    "opentelemetry-instrumentation-system-metrics>=0.46b0",
+]
+all = [
+    "drf-starter[dev,sentry,otel]",
 ]
 
 # Pytest
@@ -124,6 +123,9 @@ ignore = [
 [tool.ruff.lint.isort]
 known-first-party = ["apps", "config"]
 
+[tool.ruff.format]
+skip-magic-trailing-comma = false
+
 # Coverage
 [tool.coverage.run]
 source = ["apps"]
@@ -134,14 +136,9 @@ omit = [
     "*/__pycache__/*",
 ]
 
+
 # Bandit
 [tool.bandit]
 skips = ["B101", "B110"]  # assert used
 targets = ["apps", "config"]
 exclude = ["migrations", "tests", "__pycache__"]
-
-# Setuptools - Package discovery
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["config*", "apps*"]
-exclude = ["logs*", "templates*", "staticfiles*", "media*", "*.tests*"]

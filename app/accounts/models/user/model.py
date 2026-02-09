@@ -6,12 +6,13 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from app.authorization.mixins import RolePermissionsMixin
 from pkg.django.models import IsActiveModel, TimestampedModel, UUIDPrimaryKeyModel
 
 from .manager import UserManager
 
 
-class User(UUIDPrimaryKeyModel, IsActiveModel, TimestampedModel, PermissionsMixin, AbstractBaseUser):
+class User(UUIDPrimaryKeyModel, IsActiveModel, TimestampedModel, RolePermissionsMixin, AbstractBaseUser):
     """
     Custom User model with UUID primary key.
     """
@@ -24,11 +25,7 @@ class User(UUIDPrimaryKeyModel, IsActiveModel, TimestampedModel, PermissionsMixi
     # fields for permissions
     is_staff = models.BooleanField(
         default=False,
-        help_text=_("Designates whether the user can log into this admin site"),
-    )
-    is_superuser = models.BooleanField(
-        default=False,
-        help_text=_("Designates that this user has all permissions without explicitly assigning them"),
+        help_text=_("Kullanıcının admin ekranına erişim izni var mı?"),
     )
 
     # timestamps
@@ -45,10 +42,10 @@ class User(UUIDPrimaryKeyModel, IsActiveModel, TimestampedModel, PermissionsMixi
     ]
 
     class Meta:
-        db_table = "accounts_users"
+        db_table = "users"
         ordering = ["-created_at"]
-        verbose_name = _("User")
-        verbose_name_plural = _("Users")
+        verbose_name = _("Kullanıcı")
+        verbose_name_plural = _("01.1 - Kullanıcılar")
 
     def __str__(self) -> str:
         return str(self.id)
@@ -58,5 +55,5 @@ class User(UUIDPrimaryKeyModel, IsActiveModel, TimestampedModel, PermissionsMixi
         return f"{self.first_name} {self.last_name}".strip()
 
     @property
-    def can_sign_in(self) -> bool:
+    def can_authenticate(self) -> bool:
         return self.is_active

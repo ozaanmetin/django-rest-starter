@@ -23,7 +23,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Authentication backends
 AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
+    "app.authentication.backend.authenticate.AuthBackend",
 ]
 
 # Password hashers
